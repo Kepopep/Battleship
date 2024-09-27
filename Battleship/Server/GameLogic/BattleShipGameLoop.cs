@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Text;
+using Server.GameLogic.Field;
 using Server.GameLogic.Ship;
 
 namespace Server.GameLogic;
@@ -39,12 +40,20 @@ public class BattleShipGameLoop
     public void Display()
     {
         var stringBuilder = new StringBuilder();
+
+        var displaySymbols = new Dictionary<Cell, char>()
+        {
+            { Cell.Attacked , 'X'},
+            { Cell.Occupied , 'O'},
+            { Cell.Empty , '+'},
+            { (Cell)3 , '\u25a3'}
+        };
         
         for (int i = 0; i < _field.SizeY; i++)
         {
             for (int j = 0; j < _field.SizeX; j++)
             {
-                stringBuilder.Append($"{_field.Cells[i * _field.SizeX + j]} ");
+                stringBuilder.Append($"{displaySymbols[_field.Cells[i * _field.SizeX + j]]} ");
             }    
             stringBuilder.Append('\n');
             

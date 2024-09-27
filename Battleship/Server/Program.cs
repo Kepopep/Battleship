@@ -24,7 +24,8 @@ class Program
         
 #if DEBUG
         gameLoop.Place(new Ship(ShipType.Single), 4, 5, false);
-        gameLoop.Place(new Ship(ShipType.Large), 4, 5, false);
+        gameLoop.Place(new Ship(ShipType.Large), 1, 5, true);
+        gameLoop.Place(new Ship(ShipType.Middle), 10, 8, false);
         gameLoop.Display();
 #endif
         
