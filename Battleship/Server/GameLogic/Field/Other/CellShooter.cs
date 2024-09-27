@@ -3,7 +3,7 @@ using Server.GameLogic.Field.Utils;
 
 namespace Server.GameLogic.Field;
 
-public static class CellShooter
+public class CellShooter
 {
     [Flags]
     public enum ShootResult
@@ -14,26 +14,35 @@ public static class CellShooter
         OutOfBounds = 4,
     }
     
-    public static ShootResult Shoot(this Field field, Vector2 indexPosition)
+    private Field _field;
+    
+    public CellShooter(Field field)
     {
-        var index = field.GetPositionIndex(indexPosition);
+        _field = field;
+    }
+    
+    public ShootResult Shoot(Vector2 indexPosition)
+    {
+        var index = _field.GetPositionIndex(indexPosition);
 
-        if (index > field.Cells.GetUpperBound(0))
+        if (index > _field.Cells.GetUpperBound(0))
         {
             return ShootResult.OutOfBounds;
         }
         
-        if (!field.Cells[index].HasFlag(Cell.Occupied))
+        if (!_field.Cells[index].HasFlag(Cell.Occupied))
         {
             return ShootResult.Missed;
         }
         
-        return IsAllDestroyed(field, index) ? 
+        _field.Shoot(index);
+        
+        return IsAllDestroyed(_field, index) ? 
                  ShootResult.HitTarget|ShootResult.Destroy :
                  ShootResult.HitTarget;
     }
 
-    private static bool IsAllDestroyed(Field field, int index)
+    private bool IsAllDestroyed(Field field, int index)
     {
         var relatedShip = field.ShipCells.Find(x => x.Contains(index));
 
