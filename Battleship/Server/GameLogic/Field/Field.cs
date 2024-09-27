@@ -3,6 +3,8 @@ namespace Server.GameLogic.Field;
 public class Field
 {
     public Cell[] Cells { get; private set; }
+    
+    public List<List<int>> ShipCells { get; private set; }
 
     public readonly byte SizeX;
 
@@ -11,6 +13,7 @@ public class Field
     public Field(byte sizeX, byte sizeY)
     {
         Cells = new Cell[10*10];
+        ShipCells = new List<List<int>>();
         
         SizeX = sizeX;
         SizeY = sizeY;
@@ -19,17 +22,14 @@ public class Field
 
     #region Occupy
 
-    public void OccupyCells(IList<int> indexes)
+    public void SetShipIndexes(IList<int> indexes)
     {
         foreach (var index in indexes)
         {
-            OccupyCell(index);
+            Cells[index] = Cell.Occupied;
         }
-    }
-    
-    public void OccupyCell(int index)
-    {
-        Cells[index] = Cell.Occupied;
+        
+        ShipCells.Add(indexes.ToList());
     }
 
     #endregion

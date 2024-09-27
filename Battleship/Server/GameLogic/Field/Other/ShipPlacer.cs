@@ -1,9 +1,7 @@
 using System.Numerics;
-using Server.GameLogic.Field;
 using Server.GameLogic.Field.Utils;
 
-
-namespace Server.GameLogic.Ship;
+namespace Server.GameLogic.Field;
 
 public class ShipPlacer
 {
@@ -24,7 +22,7 @@ public class ShipPlacer
 
         public readonly int[] OccupyIndexes;
         
-        public ShipPosition(Ship ship, Vector2 position, bool vertical, int fieldSizeX)
+        public ShipPosition(Ship.Ship ship, Vector2 position, bool vertical, int fieldSizeX)
         {
             Vertical = vertical;
             
@@ -43,14 +41,14 @@ public class ShipPlacer
         }
     }
     
-    private readonly Field.Field _field;
+    private readonly GameLogic.Field.Field _field;
 
-    public ShipPlacer(Field.Field field)
+    public ShipPlacer(GameLogic.Field.Field field)
     {
         _field = field;
     }
     
-    public PlaceResult PlaceShip(Ship ship, Vector2 indexPosition, bool isVertical)
+    public PlaceResult PlaceShip(Ship.Ship ship, Vector2 indexPosition, bool isVertical)
     {
         var positionToCheck = new ShipPosition(ship, indexPosition, isVertical, _field.SizeX);
         
@@ -64,7 +62,7 @@ public class ShipPlacer
             return PlaceResult.IntersectOther;
         }
 
-        _field.OccupyCells(positionToCheck.OccupyIndexes);
+        _field.SetShipIndexes(positionToCheck.OccupyIndexes);
         
         return PlaceResult.Success;
     }
