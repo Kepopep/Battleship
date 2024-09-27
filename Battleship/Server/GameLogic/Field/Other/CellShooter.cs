@@ -28,12 +28,12 @@ public static class CellShooter
             return ShootResult.Missed;
         }
         
-        return DestroyAll(field, index) ? 
+        return IsAllDestroyed(field, index) ? 
                  ShootResult.HitTarget|ShootResult.Destroy :
                  ShootResult.HitTarget;
     }
 
-    private static bool DestroyAll(Field field, int index)
+    private static bool IsAllDestroyed(Field field, int index)
     {
         var relatedShip = field.ShipCells.Find(x => x.Contains(index));
 
