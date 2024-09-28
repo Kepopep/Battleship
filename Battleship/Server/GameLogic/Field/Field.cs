@@ -1,10 +1,12 @@
+using System.Numerics;
+
 namespace Server.GameLogic.Field;
 
 public class Field
 {
-    public Cell[] Cells { get; private set; }
+    public event Action<int, Cell> OnCellStateChange;
     
-    public List<List<int>> ShipCells { get; private set; }
+    public readonly Cell[] Cells;
 
     public readonly byte SizeX;
 
@@ -12,34 +14,43 @@ public class Field
     
     public Field(byte sizeX, byte sizeY)
     {
-        Cells = new Cell[10*10];
-        ShipCells = new List<List<int>>();
+        Cells = new Cell[sizeX*sizeY];
         
         SizeX = sizeX;
         SizeY = sizeY;
     }
 
-
-    #region Occupy
-
-    public void SetShipIndexes(IList<int> indexes)
+    public void Occupy(IList<int> indexes)
     {
         foreach (var index in indexes)
         {
-            Cells[index] = Cell.Occupied;
+            SetCell(index, Cell.Occupied);
         }
-        
-        ShipCells.Add(indexes.ToList());
     }
 
-    #endregion
-    
-    #region Shoot
-
-    public void Shoot(int index)
+    public void Attack(int index)
     {
-        Cells[index] |= Cell.Attacked;
+        UpdateCell(index, Cell.Attacked);
+    }
+    
+    #region Cell
+    
+    protected virtual void SetCell(int index, Cell cell)
+    {
+        Cells[index] = cell;
+        OnCellStateChange?.Invoke(index, cell);
+    }
+    
+    protected virtual void UpdateCell(int index, Cell cell)
+    {
+        Cells[index] |= cell;
+        OnCellStateChange?.Invoke(index, cell);
     }
     
     #endregion
+    
+    public int Position2Index(Vector2 position)
+    {
+        return (int)position.X + (int)position.Y * SizeX;
+    }
 }

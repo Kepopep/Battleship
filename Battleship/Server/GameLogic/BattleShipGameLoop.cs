@@ -1,7 +1,5 @@
-using System.Numerics;
 using System.Text;
 using Server.GameLogic.Field;
-using Server.GameLogic.Ship;
 
 namespace Server.GameLogic;
 
@@ -31,35 +29,6 @@ public class BattleShipGameLoop
         
     }
 
-    public void Place(Ship.Ship ship, int x, int y, bool vertical)
-    {
-        var result = _placer.PlaceShip(ship, new Vector2(x-1, y-1), vertical);
-        
-#if DEBUG
-        Console.WriteLine($"Place end: {ship} {result}");
-#endif
-    }
-
-    public void Shoot(int x, int y)
-    {
-        var result = _shooter.Shoot(new Vector2(x - 1, y - 1));
-        
-        if(result.HasFlag(CellShooter.ShootResult.Destroy))
-        {
-            
-#if DEBUG
-        Console.WriteLine($"Ship destroyed {(CheckWin() ? "win" : "")}");
-#endif
-        }
-    }
-
-    private bool CheckWin()
-    {
-        return _field.ShipCells
-            .TrueForAll(x => 
-                x.TrueForAll(y => 
-                    _field.Cells[y].HasFlag(Cell.Attacked)));
-    }
 
 #if DEBUG
     public void Display()

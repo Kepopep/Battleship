@@ -36,9 +36,4 @@ public static class FieldUtils
         
         return result;
     }
-
-    public static int GetPositionIndex(this Field field, Vector2 position)
-    {
-        return (int)position.X + (int)position.Y * field.SizeX;
-    }
 }

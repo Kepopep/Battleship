@@ -3,7 +3,7 @@ using Server.GameLogic.Field.Utils;
 
 namespace Server.GameLogic.Field;
 
-public class ShipPlacer
+public class ShipPlacer(Field field)
 {
     public enum PlaceResult
     {
@@ -22,18 +22,18 @@ public class ShipPlacer
 
         public readonly int[] OccupyIndexes;
         
-        public ShipPosition(Ship.Ship ship, Vector2 position, bool vertical, int fieldSizeX)
+        public ShipPosition(Ship.ShipType type, Vector2 position, bool vertical, int fieldSizeX)
         {
             Vertical = vertical;
             
             StartIndex = (int)position.X + (int)position.Y * fieldSizeX;
 
-            var addSize = (byte)ship.Type - 1;
+            var addSize = (byte)type - 1;
             EndIndex = StartIndex + (Vertical ? fieldSizeX * addSize : addSize);
             
-            OccupyIndexes = new int[(int)ship.Type];
+            OccupyIndexes = new int[(int)type];
             
-            for (int i = 0; i < (int)ship.Type; i++)
+            for (int i = 0; i < (int)type; i++)
             {
                 OccupyIndexes[i] = StartIndex + i * 
                     (Vertical ? fieldSizeX : 1);
@@ -41,16 +41,16 @@ public class ShipPlacer
         }
     }
     
-    private readonly GameLogic.Field.Field _field;
-
-    public ShipPlacer(GameLogic.Field.Field field)
+    public void PlaceShip(Ship.ShipType type, Vector2 indexPosition, bool isVertical)
     {
-        _field = field;
+        var shipPosition = new ShipPosition(type, indexPosition, isVertical, field.SizeX);
+        
+        field.Occupy(shipPosition.OccupyIndexes);
     }
     
-    public PlaceResult PlaceShip(Ship.Ship ship, Vector2 indexPosition, bool isVertical)
+    public PlaceResult CanPlaceShip(Ship.ShipType type, Vector2 indexPosition, bool isVertical)
     {
-        var positionToCheck = new ShipPosition(ship, indexPosition, isVertical, _field.SizeX);
+        var positionToCheck = new ShipPosition(type, indexPosition, isVertical, field.SizeX);
         
         if (!InField(positionToCheck))
         {
@@ -62,17 +62,17 @@ public class ShipPlacer
             return PlaceResult.IntersectOther;
         }
 
-        _field.SetShipIndexes(positionToCheck.OccupyIndexes);
-        
         return PlaceResult.Success;
     }
 
+    #region Validation
+    
     private bool IntersectOther(ShipPosition positionToCheck)
     {
         var checkIndexes = GetNeighbors(positionToCheck);
         
-        var lowerBound = _field.Cells.GetLowerBound(0);
-        var upperBound = _field.Cells.GetUpperBound(0);
+        var lowerBound = field.Cells.GetLowerBound(0);
+        var upperBound = field.Cells.GetUpperBound(0);
         
         foreach (var index in checkIndexes)
         {
@@ -81,7 +81,7 @@ public class ShipPlacer
                 continue;
             }
 
-            if (_field.Cells[index] >= Cell.Occupied)
+            if (field.Cells[index] >= Cell.Occupied)
             {
                 return true;
             }
@@ -92,14 +92,14 @@ public class ShipPlacer
 
     private bool InField(ShipPosition positionToCheck)
     {
-        var lowerBound = _field.Cells.GetLowerBound(0);
-        var upperBound = _field.Cells.GetUpperBound(0);
+        var lowerBound = field.Cells.GetLowerBound(0);
+        var upperBound = field.Cells.GetUpperBound(0);
         
         if (positionToCheck.StartIndex < lowerBound || 
             positionToCheck.StartIndex > upperBound || 
             (positionToCheck.Vertical ? 
                 positionToCheck.EndIndex > upperBound : 
-                positionToCheck.EndIndex % _field.SizeY < positionToCheck.StartIndex % _field.SizeX))
+                positionToCheck.EndIndex % field.SizeY < positionToCheck.StartIndex % field.SizeX))
         {
             // Начало или конец карабля находится за пределами поля
             return false;
@@ -114,7 +114,7 @@ public class ShipPlacer
         
         foreach (var index in positionToCheck.OccupyIndexes)
         {
-            result.AddRange(_field.GetNeighbors(index));    
+            result.AddRange(field.GetNeighbors(index));    
         }
         
         return result.
@@ -122,4 +122,5 @@ public class ShipPlacer
             ToArray();
     }
     
+    #endregion
 }
