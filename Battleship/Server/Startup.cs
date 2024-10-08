@@ -1,4 +1,5 @@
 using Server.Web;
+using Server.Web.Hub;
 
 namespace Server;
 
@@ -7,6 +8,7 @@ internal class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSignalR();
+        services.AddControllers();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -25,6 +27,7 @@ internal class Startup
 
         app.UseEndpoints(endpoint =>
         {
+            //endpoint.MapControllers();
             endpoint.MapHub<GameHub>("/hub");
         });
     }
