@@ -16,7 +16,7 @@ public class BattleShipGameLoop
         _field = new Field.Field(10, 10);
         
         _placer = new ShipPlacer(_field);
-        _shooter = new CellShooter(_field);
+        _shooter = new CellShooter();
     }
     
     public void Start()
