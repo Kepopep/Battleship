@@ -29,4 +29,10 @@ public struct GameFieldInfo
         return _firstInfo.ConnectionId == connectionId ? _firstInfo.Player :
             _secondInfo.ConnectionId == connectionId ? _secondInfo.Player : null;
     }
+    
+    public OpponentInfo GetOpponentInfo(string connectionId)
+    {
+        return _firstInfo.ConnectionId == connectionId ? _secondInfo :
+            _secondInfo.ConnectionId == connectionId ? _firstInfo : default;
+    }
 }

@@ -78,7 +78,7 @@ public class GameLobbyController : Controller
         {
             return NotFound();
         }
-        
+
         player.Place(info.CellIndex, info.Type, info.IsVertical);
 
         var fieldView = new GameFieldView
@@ -94,4 +94,52 @@ public class GameLobbyController : Controller
 
         return Ok();
     }
+
+
+    [HttpPost("shoot")]
+    public async Task<IActionResult> Shoot([FromBody] ShootPostInfo info)
+    {
+        var gameFieldInfo = await _gameList.GetByOpponentId(info.ConnectionId);
+
+        if (gameFieldInfo.Equals(default(GameFieldInfo)))
+        {
+            return NotFound();
+        }
+
+        var player = gameFieldInfo.GetPlayer(info.ConnectionId);
+        
+        if (player == null)
+        {
+            return NotFound();
+        }
+        
+        player.Shoot(info.CellIndex);
+        
+        var playerFieldView = new GameFieldView
+        {
+            Self = player.GetSelfFieldView(),
+            Opponent = player.GetOpponentFieldView()
+        };
+        
+        await _hubContext
+            .Clients
+            .Client(info.ConnectionId)
+            .UpdateSelfField(playerFieldView);
+
+        var opponentInfo = gameFieldInfo.GetOpponentInfo(info.ConnectionId);
+        
+        var opponentFieldView = new GameFieldView()
+        {
+            Self = opponentInfo.Player?.GetSelfFieldView() ?? Array.Empty<Cell>(),
+            Opponent = opponentInfo.Player?.GetOpponentFieldView() ?? Array.Empty<Cell>()
+        };
+        
+        await _hubContext
+            .Clients
+            .Client(opponentInfo.ConnectionId)
+            .UpdateSelfField(opponentFieldView);
+        
+        return Ok();
+    }
+
 }

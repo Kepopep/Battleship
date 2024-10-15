@@ -69,13 +69,34 @@ public class GameHub : Hub<IGameHub>
         await Task.CompletedTask;
     }
     
-    public async Task Hit(string index)
+    public async Task Shoot(object info)
     {
-        if (!int.TryParse(index, out int indexInt))
+        if (info is not JsonElement jsonInfo)
         {
             return;
         }
 
+        try
+        {
+            var postInfo = new ShootPostInfo()
+            {
+                ConnectionId = Context.ConnectionId,
+                CellIndex = jsonInfo
+                    .GetProperty("CellIndex")
+                    .GetInt32(),
+            };
+            
+            await Client.PostAsync(
+                $"http://localhost:5000/api/game-lobby/shoot",
+                JsonContent.Create(postInfo)
+            );
+        }
+        catch (Exception e)
+        {
+            await Console.Error.WriteLineAsync($"Validation fail, GameHub.Shoot \n {e.Message}");
+            throw;
+        }
+        
         await Task.CompletedTask;
     }
 }

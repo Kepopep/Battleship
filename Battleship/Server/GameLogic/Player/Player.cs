@@ -109,7 +109,10 @@ public class Player
     {
         return _enemy._field
             .Cells
-            .Select(x => x & ~Cell.Occupied)
+            .Select(x => 
+                x.HasFlag(Cell.Attacked) ? 
+                    x : 
+                    x & ~Cell.Occupied)
             .ToArray();
     }
     

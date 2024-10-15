@@ -110,7 +110,9 @@
         });
         
         generate("opponent_holder", function () {
-            
+            hubConnection.invoke("Shoot", {
+                CellIndex: parseInt(this.id),
+            });
         });
     });
     
