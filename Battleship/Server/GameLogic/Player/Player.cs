@@ -60,6 +60,25 @@ public class Player
         }
     }
 
+    public void Place(int index, ShipType type, bool isVertical)
+    {
+        switch (_shipPlacer.CanPlaceShip(type, index, isVertical))
+        {
+            case ShipPlacer.PlaceResult.Success:
+                Console.WriteLine($"Place: Success");
+                _shipPlacer.PlaceShip(type, index, isVertical);
+                break;
+            case ShipPlacer.PlaceResult.OutOfBounds:
+                Console.WriteLine($"Place: OutOfBounds");
+                break;
+            case ShipPlacer.PlaceResult.IntersectOther:
+                Console.WriteLine($"Place: IntersectOther");
+                break;
+            default:
+                break;
+        }
+    }
+
     #region Handlers
     
     private void OnCellStateChange(int index, Cell cell)
@@ -86,7 +105,7 @@ public class Player
         return _field.Cells;
     }
 
-    public Cell[] GetEnemyFieldView()
+    public Cell[] GetOpponentFieldView()
     {
         return _enemy._field
             .Cells

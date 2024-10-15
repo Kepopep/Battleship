@@ -22,11 +22,11 @@ public class ShipPlacer(Field field)
 
         public readonly int[] OccupyIndexes;
         
-        public ShipPosition(Ship.ShipType type, Vector2 position, bool vertical, int fieldSizeX)
+        public ShipPosition(Ship.ShipType type, int index, bool vertical, int fieldSizeX)
         {
             Vertical = vertical;
             
-            StartIndex = (int)position.X + (int)position.Y * fieldSizeX;
+            StartIndex = index;
 
             var addSize = (byte)type - 1;
             EndIndex = StartIndex + (Vertical ? fieldSizeX * addSize : addSize);
@@ -41,16 +41,16 @@ public class ShipPlacer(Field field)
         }
     }
     
-    public void PlaceShip(Ship.ShipType type, Vector2 indexPosition, bool isVertical)
+    public void PlaceShip(Ship.ShipType type, int index, bool isVertical)
     {
-        var shipPosition = new ShipPosition(type, indexPosition, isVertical, field.SizeX);
+        var shipPosition = new ShipPosition(type, index, isVertical, field.SizeX);
         
         field.Occupy(shipPosition.OccupyIndexes);
     }
     
-    public PlaceResult CanPlaceShip(Ship.ShipType type, Vector2 indexPosition, bool isVertical)
+    public PlaceResult CanPlaceShip(Ship.ShipType type, int index, bool isVertical)
     {
-        var positionToCheck = new ShipPosition(type, indexPosition, isVertical, field.SizeX);
+        var positionToCheck = new ShipPosition(type, index, isVertical, field.SizeX);
         
         if (!InField(positionToCheck))
         {

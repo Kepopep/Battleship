@@ -1,5 +1,7 @@
 using Server.Web;
 using Server.Web.Hub;
+using Server.Web.Lobby;
+using Server.Web.Lobby.Game;
 
 namespace Server;
 
@@ -7,8 +9,23 @@ internal class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddSignalR();
         services.AddControllers();
+
+        services.AddSingleton<IWaiterList, WaitersMemoryList>();
+        services.AddSingleton<IGameList, GamesMemoryList>();
+        
+        services.AddSignalR();
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:5000")
+                        .AllowAnyHeader()
+                        .WithMethods("GET", "POST")
+                        .AllowCredentials();
+                });
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -25,9 +42,11 @@ internal class Startup
         
         app.UseRouting();
 
+        app.UseCors();
+
         app.UseEndpoints(endpoint =>
         {
-            //endpoint.MapControllers();
+            endpoint.MapControllers();
             endpoint.MapHub<GameHub>("/hub");
         });
     }

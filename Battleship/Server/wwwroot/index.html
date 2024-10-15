@@ -16,23 +16,23 @@
     </style>
 </head>
 <body>
-<div id="inputForm">
-    <input type="text" id="message" />
-    <input type="button" id="sendBtn" value="Отправить" />
-</div>
-<div id="chatroom"></div>
+<header id="game_status">
+    Waiting other
+</header>
 
-<table id="holder"></table>
+<table id="self_holder"></table>
+
+<table id="other_holder"></table>
 
 <script src="lib/signalr/signalr.js"></script>
 <script>
-    
+
     const hubConnection = new signalR.HubConnectionBuilder()
         .withUrl("/hub")
         .build();
     
-    function generate(){
-        var table = document.getElementById("holder"); 
+    function generate(holder, clickFunction){
+        var table = document.getElementById(holder); 
         var rowButtonNumber = 10;
         var buttonNumber = 100;
         
@@ -45,11 +45,7 @@
                 var btn = document.createElement("button");
                 btn.innerHTML = "+";
                 btn.id = i;
-                btn.onclick = function () 
-                { 
-                    hubConnection.invoke("Hit", this.id);    
-                    alert(this.id); 
-                };
+                btn.onclick = clickFunction;
                 if (i >= buttonNumber) {
                     break;
                 } else {
@@ -61,17 +57,25 @@
         }
     }
     
-    generate();
+    //generate();
+    // TODO: добавить горизональное расположение
     
     hubConnection.on("LoadGame", () => {
-        alert("GameStarted");
-    });
-    
-    hubConnection.on("UpdateView", () => {
-        generate();
+        let statusElement = document.getElementById("game_status");
+        statusElement.textContent = "Gaming";
+        
+        alert("GameStarted, select ship place");
+        
+        generate("self_holder", function ()
+        {
+            hubConnection.invoke("Place", {
+                CellIndex: parseInt(this.id),
+                Type: 4,
+                IsVertical: true
+            });
+        });
     });
     
     hubConnection.start();
 </script>
 </body>
-</html>
