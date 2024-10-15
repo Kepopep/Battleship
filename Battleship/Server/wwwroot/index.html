@@ -22,7 +22,7 @@
 
 <table id="self_holder"></table>
 
-<table id="other_holder"></table>
+<table id="opponent_holder"></table>
 
 <script src="lib/signalr/signalr.js"></script>
 <script>
@@ -57,6 +57,40 @@
         }
     }
     
+    function update(holder, array) {
+        var tableElement = document.querySelector('#' + holder);
+        var i = 0;
+        
+        array.forEach(cell => {
+            var view = "";
+
+            switch (cell) {
+                case 0:
+                    view = "+";
+                    break;
+
+                case 1:
+                    view = "O";
+                    break;
+
+                case 2:
+                    view = "X";
+                    break;
+
+                case 3:
+                    view = "W";
+                    break;
+
+                default:
+                    break;
+            }
+
+            tableElement.querySelector("[id='" + i + "']")
+                .textContent = view
+
+            i = ++i;
+        });
+    }
     //generate();
     // TODO: добавить горизональное расположение
     
@@ -74,43 +108,16 @@
                 IsVertical: true
             });
         });
+        
+        generate("opponent_holder", function () {
+            
+        });
     });
     
     hubConnection.on("UpdateSelfField", function(view) 
     {
-        const tableElement = document.querySelector('#self_holder');
-        
-        var i = 0;
-        
-        view['self'].forEach(cell => {
-            var view = "";
-            
-            switch (cell) {
-                case 0:
-                    view = "+";
-                    break;
-                    
-                case 1:
-                    view = "O";
-                    break;
-
-                case 2:
-                    view = "X";
-                    break;
-
-                case 3:
-                    view = "W";
-                    break;
-                    
-                default:
-                    break;
-            }
-
-            tableElement.querySelector("[id='" + i + "']")
-                .textContent = view
-            
-            i = ++i;
-        });
+        update("self_holder", view['self']);
+        update("opponent_holder", view['opponent']);
     });
 
     hubConnection.start();
