@@ -76,6 +76,43 @@
         });
     });
     
+    hubConnection.on("UpdateSelfField", function(view) 
+    {
+        const tableElement = document.querySelector('#self_holder');
+        
+        var i = 0;
+        
+        view['self'].forEach(cell => {
+            var view = "";
+            
+            switch (cell) {
+                case 0:
+                    view = "+";
+                    break;
+                    
+                case 1:
+                    view = "O";
+                    break;
+
+                case 2:
+                    view = "X";
+                    break;
+
+                case 3:
+                    view = "W";
+                    break;
+                    
+                default:
+                    break;
+            }
+
+            tableElement.querySelector("[id='" + i + "']")
+                .textContent = view
+            
+            i = ++i;
+        });
+    });
+
     hubConnection.start();
 </script>
 </body>

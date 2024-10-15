@@ -87,8 +87,9 @@ public class GameLobbyController : Controller
             Opponent = player.GetOpponentFieldView()
         };
         
-        await _hubContext.Clients
-            .User(info.ConnectionId)
+        await _hubContext
+            .Clients
+            .Client(info.ConnectionId)
             .UpdateSelfField(fieldView);
 
         return Ok();
