@@ -20,6 +20,12 @@
     Waiting other
 </header>
 
+
+<div>
+    <input type="checkbox" id="check_vertical" checked />
+    <label for="check_vertical">Vertical</label>
+</div>
+
 <table id="self_holder"></table>
 
 <table id="opponent_holder"></table>
@@ -91,7 +97,6 @@
             i = ++i;
         });
     }
-    //generate();
     // TODO: добавить горизональное расположение
     
     hubConnection.on("LoadGame", () => {
@@ -105,7 +110,9 @@
             hubConnection.invoke("Place", {
                 CellIndex: parseInt(this.id),
                 Type: 4,
-                IsVertical: true
+                IsVertical: document
+                    .querySelector("#check_vertical")
+                    .checked
             });
         });
         
@@ -116,8 +123,7 @@
         });
     });
     
-    hubConnection.on("UpdateSelfField", function(view) 
-    {
+    hubConnection.on("UpdateSelfField", (view) => {
         update("self_holder", view['self']);
         update("opponent_holder", view['opponent']);
     });
