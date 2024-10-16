@@ -41,4 +41,27 @@ public class ShipTypeCounter
         
         return _existingTypes[type] < maxCount;
     }
+
+    public bool PlaceAll()
+    {
+        if (_config == null)
+        {
+            return true;
+        }
+        
+        foreach (var typeInfo in _config.Configs)
+        {
+            if (!_existingTypes.TryGetValue(typeInfo.ShipType, out var count))
+            {
+                return false;
+            }
+
+            if (count < typeInfo.MaxCount)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

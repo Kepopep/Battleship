@@ -85,6 +85,11 @@ public class ShipPlacer
         return PlaceResult.Success;
     }
 
+    public bool PlaceAll()
+    {
+        return _typeCounter.PlaceAll();
+    }
+    
     #region Validation
     
     private bool IntersectOther(ShipPosition positionToCheck)

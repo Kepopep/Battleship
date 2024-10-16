@@ -39,6 +39,12 @@ public class Player
     
     public void Shoot(int index) 
     {
+        if (!_shipPlacer.PlaceAll() && !_enemy._shipPlacer.PlaceAll())
+        {
+            Console.WriteLine($"Hit: No all placed");
+            return;
+        }
+        
         switch (_cellShooter.Shoot(index))
         {
             case CellShooter.ShootResult.OutOfBounds:
