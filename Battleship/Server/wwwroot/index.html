@@ -20,6 +20,28 @@
     Waiting other
 </header>
 
+<div>
+    <h3>Place ship type</h3>
+    <label>
+        <input type="checkbox" name="check" onclick="onlyOne(this)" id="1" checked />
+        Single
+    </label>
+
+    <label>
+        <input type="checkbox" name="check" onclick="onlyOne(this)" id="2" />
+        Middle
+    </label>
+
+    <label>
+        <input type="checkbox" name="check" onclick="onlyOne(this)" id="3"/>
+        Big
+    </label>
+
+    <label>
+        <input type="checkbox" name="check" onclick="onlyOne(this)" id="4" />
+        Large
+    </label>
+</div>
 
 <div>
     <input type="checkbox" id="check_vertical" checked />
@@ -32,7 +54,19 @@
 
 <script src="lib/signalr/signalr.js"></script>
 <script>
-
+    
+    var selectedShipType = 0;
+    
+    function onlyOne(checkbox) {
+        var checkboxes = document.getElementsByName(checkbox.name)
+        
+        selectedShipType = parseInt(checkbox.id);
+        
+        checkboxes.forEach((item) => {
+            if (item !== checkbox) item.checked = false
+        })
+    } 
+    
     const hubConnection = new signalR.HubConnectionBuilder()
         .withUrl("/hub")
         .build();
@@ -109,7 +143,7 @@
         {
             hubConnection.invoke("Place", {
                 CellIndex: parseInt(this.id),
-                Type: 4,
+                Type: selectedShipType,
                 IsVertical: document
                     .querySelector("#check_vertical")
                     .checked
