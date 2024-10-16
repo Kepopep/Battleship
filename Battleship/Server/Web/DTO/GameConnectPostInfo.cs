@@ -1,6 +1,6 @@
-namespace Server.Web.Controllers.DTO;
+namespace Server.Web.DTO;
 
-public class GameLobbyPair
+public class GameConnectPostInfo
 {
     public string FirstId { get; set; }
     

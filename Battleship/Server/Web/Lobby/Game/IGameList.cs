@@ -1,6 +1,6 @@
-using System.Runtime;
+using Server.Web.Misc;
 
-namespace Server.Web.Lobby.Game;
+namespace Server.Web.Lobby;
 
 public interface IGameList
 {

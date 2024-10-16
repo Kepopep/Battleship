@@ -2,12 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Server.GameLogic.Field;
 using Server.GameLogic.Player;
-using Server.GameLogic.Ship;
-using Server.Web.Controllers.DTO;
-using Server.Web.Controllers.Misc;
+using Server.Web.DTO;
 using Server.Web.Hub;
-using Server.Web.Hub.DTO;
+using Server.Web.Lobby;
 using Server.Web.Lobby.Game;
+using Server.Web.Misc;
 
 namespace Server.Web.Controllers;
 
@@ -29,16 +28,16 @@ public class GameLobbyController : Controller
     }
     
     [HttpPost("connect")]
-    public async Task<IActionResult> Connect([FromBody]GameLobbyPair pairInfo)
+    public async Task<IActionResult> Connect([FromBody]GameConnectPostInfo info)
     {
         var lobbyGuid = Guid.NewGuid();
         
-        Console.WriteLine($"Game-lobby.Connect {pairInfo.FirstId} {pairInfo.SecondId}");
+        Console.WriteLine($"Game-lobby.Connect {info.FirstId} {info.SecondId}");
         
         var firstInfo = new OpponentInfo
         {
             Id = Guid.NewGuid(),
-            ConnectionId = pairInfo.FirstId,
+            ConnectionId = info.FirstId,
             Player = new Player(_configuration)
         };
         await _hubContext.ToGameGroup(firstInfo.ConnectionId, lobbyGuid.ToString());
@@ -46,7 +45,7 @@ public class GameLobbyController : Controller
         var secondInfo = new OpponentInfo
         {
             Id = Guid.NewGuid(),
-            ConnectionId = pairInfo.SecondId,
+            ConnectionId = info.SecondId,
             Player = new Player(_configuration)
         };
         await _hubContext.ToGameGroup(secondInfo.ConnectionId, lobbyGuid.ToString());

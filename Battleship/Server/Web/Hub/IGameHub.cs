@@ -1,4 +1,4 @@
-using Server.Web.Lobby.Game;
+using Server.Web.Misc;
 
 namespace Server.Web.Hub;
 

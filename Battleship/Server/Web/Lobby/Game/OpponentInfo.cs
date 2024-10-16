@@ -1,6 +1,6 @@
 using Server.GameLogic.Player;
 
-namespace Server.Web.Lobby.Game;
+namespace Server.Web.Lobby;
 
 public struct OpponentInfo
 {

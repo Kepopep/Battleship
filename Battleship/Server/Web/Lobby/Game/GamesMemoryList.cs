@@ -1,4 +1,6 @@
-namespace Server.Web.Lobby.Game;
+using Server.Web.Misc;
+
+namespace Server.Web.Lobby;
 
 public class GamesMemoryList : IGameList
 {

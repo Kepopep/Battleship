@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.SignalR;
 using Server.GameLogic.Ship;
-using Server.Web.Hub.DTO;
+using Server.Web.DTO;
 
 namespace Server.Web.Hub;
 

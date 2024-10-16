@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Server.Web.Hub;
 
-namespace Server.Web.Controllers.Misc;
+namespace Server.Web.Lobby.Game;
 
 public static class LobbyHelper
 {

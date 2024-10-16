@@ -1,6 +1,6 @@
 using Server.GameLogic.Ship;
 
-namespace Server.Web.Hub.DTO;
+namespace Server.Web.DTO;
 
 public class PlacePostInfo
 {

@@ -1,6 +1,6 @@
 using Server.GameLogic.Field;
 
-namespace Server.Web.Lobby.Game;
+namespace Server.Web.Misc;
 
 public class GameFieldView
 {

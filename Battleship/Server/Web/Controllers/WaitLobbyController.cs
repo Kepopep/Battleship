@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Server.Web.Controllers.DTO;
+using Server.Web.DTO;
 using Server.Web.Hub;
 using Server.Web.Lobby;
 
@@ -35,7 +35,7 @@ public class WaitLobbyController : ControllerBase
             return Ok();
         }
         
-        var pareInfo = new GameLobbyPair()
+        var pareInfo = new GameConnectPostInfo()
         {
             FirstId = id,
             SecondId = pairInfo.PairId

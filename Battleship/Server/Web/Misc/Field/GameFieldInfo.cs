@@ -1,7 +1,8 @@
 using Server.GameLogic.Field;
 using Server.GameLogic.Player;
+using Server.Web.Lobby;
 
-namespace Server.Web.Lobby.Game;
+namespace Server.Web.Misc;
 
 public struct GameFieldInfo
 {
