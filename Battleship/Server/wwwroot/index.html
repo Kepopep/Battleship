@@ -55,7 +55,7 @@
 <script src="lib/signalr/signalr.js"></script>
 <script>
     
-    var selectedShipType = 0;
+    var selectedShipType = parseInt(1);
     
     function onlyOne(checkbox) {
         var checkboxes = document.getElementsByName(checkbox.name)
@@ -83,7 +83,7 @@
             for (var j = 0; j < rowButtonNumber; j++, i++) {
                 var td = document.createElement("td");
                 var btn = document.createElement("button");
-                btn.innerHTML = "+";
+                btn.innerHTML = "💧";
                 btn.id = i;
                 btn.onclick = clickFunction;
                 if (i >= buttonNumber) {
@@ -106,19 +106,19 @@
 
             switch (cell) {
                 case 0:
-                    view = "+";
+                    view = "💧";
                     break;
 
                 case 1:
-                    view = "O";
+                    view = "⚓";
                     break;
 
                 case 2:
-                    view = "X";
+                    view = "💥";
                     break;
 
                 case 3:
-                    view = "W";
+                    view = "🔥";
                     break;
 
                 default:
