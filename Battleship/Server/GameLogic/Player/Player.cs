@@ -37,15 +37,17 @@ public class Player
         _cellShooter.InitField(_enemy._field);
     }
     
-    public void Shoot(int index) 
+    public CellShooter.ShootResult Shoot(int index) 
     {
         if (!_shipPlacer.PlaceAll() && !_enemy._shipPlacer.PlaceAll())
         {
             Console.WriteLine($"Hit: No all placed");
-            return;
+            return CellShooter.ShootResult.Other;
         }
+
+        var result = _cellShooter.Shoot(index);
         
-        switch (_cellShooter.Shoot(index))
+        switch (result)
         {
             case CellShooter.ShootResult.OutOfBounds:
                 Console.WriteLine($"Hit: OutOfBounds");
@@ -59,9 +61,9 @@ public class Player
             case CellShooter.ShootResult.NoTarget:
                 Console.WriteLine($"Hit: NoTarget");
                 break;
-            default:
-                return;
         }
+        
+        return result;
     }
 
     public void Place(int index, ShipType type, bool isVertical)

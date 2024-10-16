@@ -13,6 +13,7 @@ public class CellShooter
         Missed = 1,
         HitTarget = 2,
         NoTarget = 4,
+        Other = 5,
     }
 
     public void InitField(Field? field)

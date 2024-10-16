@@ -75,7 +75,7 @@ public class GameLobbyController : Controller
     {
         var gameFieldInfo = await _gameList.GetByOpponentId(info.ConnectionId);
         
-        var player = gameFieldInfo.GetPlayer(info.ConnectionId);
+        var player = gameFieldInfo.GetOpponentInfo(info.ConnectionId).Player;
 
         if (player == null)
         {
@@ -109,19 +109,31 @@ public class GameLobbyController : Controller
             return NotFound();
         }
 
-        var player = gameFieldInfo.GetPlayer(info.ConnectionId);
+        var currentInfo = gameFieldInfo
+            .GetOpponentInfo(info.ConnectionId);
         
-        if (player == null)
+        if (currentInfo.Player == null)
         {
             return NotFound();
         }
-        
-        player.Shoot(info.CellIndex);
+
+        var activeOpponent = gameFieldInfo.GetActiveOpponentInfo();
+
+        if (currentInfo.Id != activeOpponent.Id)
+        {
+            Console.WriteLine($"Hit: Not active turn");
+            return BadRequest();
+        }
+
+        if (currentInfo.Player.Shoot(info.CellIndex) == CellShooter.ShootResult.Missed)
+        {
+            gameFieldInfo.ChangeActiveOpponent();
+        }
         
         var playerFieldView = new GameFieldView
         {
-            Self = player.GetSelfFieldView(),
-            Opponent = player.GetOpponentFieldView()
+            Self = currentInfo.Player.GetSelfFieldView(),
+            Opponent = currentInfo.Player.GetOpponentFieldView()
         };
         
         await _hubContext
@@ -129,17 +141,17 @@ public class GameLobbyController : Controller
             .Client(info.ConnectionId)
             .UpdateSelfField(playerFieldView);
 
-        var opponentInfo = gameFieldInfo.GetOpponentInfo(info.ConnectionId);
+        var enemyInfo = gameFieldInfo.GetEnemyOpponentInfo(info.ConnectionId);
         
         var opponentFieldView = new GameFieldView()
         {
-            Self = opponentInfo.Player?.GetSelfFieldView() ?? Array.Empty<Cell>(),
-            Opponent = opponentInfo.Player?.GetOpponentFieldView() ?? Array.Empty<Cell>()
+            Self = enemyInfo.Player?.GetSelfFieldView() ?? Array.Empty<Cell>(),
+            Opponent = enemyInfo.Player?.GetOpponentFieldView() ?? Array.Empty<Cell>()
         };
         
         await _hubContext
             .Clients
-            .Client(opponentInfo.ConnectionId)
+            .Client(enemyInfo.ConnectionId)
             .UpdateSelfField(opponentFieldView);
         
         return Ok();
