@@ -6,31 +6,29 @@ namespace Server.GameLogic.Player;
 
 public class Player
 {
-    public event Action OnFail; 
-    
-    public event Action OnFieldUpdate; 
-    
     private readonly Field.Field _field;   
     
     private readonly ShipPlacer _shipPlacer;
     
     private readonly CellShooter _cellShooter;
-    
-    private List<Ship.Ship> _ships;
 
     private Player _enemy;
-
-    public bool HasEnemy => _cellShooter.HasTarget;
-
-    public Player()
+    
+    public Player(IConfiguration configuration)
     {
-        _field = new Field.Field(10, 10);
-        _field.OnCellStateChange += OnCellStateChange;
+        var fieldConfigSection = configuration
+            .GetSection("FieldConfig");
+            
+        _field = new Field.Field(
+            fieldConfigSection
+                .GetSection("SizeX")
+                .Get<byte>(),
+            fieldConfigSection
+                .GetSection("SizeX")
+                .Get<byte>());
         
-        _shipPlacer = new ShipPlacer(_field);
+        _shipPlacer = new ShipPlacer(_field, configuration);
         _cellShooter = new CellShooter();
-
-        _ships = new List<Ship.Ship>();
     }
 
     public void AssignEnemy(Player enemy)
@@ -74,29 +72,13 @@ public class Player
             case ShipPlacer.PlaceResult.IntersectOther:
                 Console.WriteLine($"Place: IntersectOther");
                 break;
+            case ShipPlacer.PlaceResult.TypeMaxCount:
+                Console.WriteLine($"Place: TypeMaxCount {type}");
+                break;
             default:
                 break;
         }
     }
-
-    #region Handlers
-    
-    private void OnCellStateChange(int index, Cell cell)
-    {
-        OnFieldUpdate?.Invoke();
-        
-        if (!cell.HasFlag(Cell.Occupied | Cell.Attacked))
-        {
-            return;
-        }
-        
-        if (_ships.TrueForAll(x => x.IsDestroyed))
-        {
-            OnFail?.Invoke();   
-        }
-    }
-    
-    #endregion
 
     #region Field representation
     

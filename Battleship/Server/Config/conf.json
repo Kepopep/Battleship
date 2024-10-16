@@ -1,0 +1,26 @@
+{
+  "FieldConfig": {
+    "SizeX": 10,
+    "SizeY": 10
+  },
+  "ShipConfig": {
+    "Configs": [
+      {
+        "ShipType": 1,
+        "MaxCount": 4
+      },
+      {
+        "ShipType": 2,
+        "MaxCount": 3
+      },
+      {
+        "ShipType": 3,
+        "MaxCount": 2
+      },
+      {
+        "ShipType": 4,
+        "MaxCount": 1
+      }
+    ]
+  }
+}

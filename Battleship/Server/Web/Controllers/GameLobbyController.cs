@@ -16,12 +16,16 @@ namespace Server.Web.Controllers;
 public class GameLobbyController : Controller
 {
     private readonly IHubContext<GameHub, IGameHub> _hubContext;
+    
     private readonly IGameList _gameList;
+    
+    private readonly IConfiguration _configuration;
 
-    public GameLobbyController(IHubContext<GameHub, IGameHub> hubContext, IGameList gameList)
+    public GameLobbyController(IHubContext<GameHub, IGameHub> hubContext, IGameList gameList, IConfiguration configuration)
     {
         _hubContext = hubContext;
         _gameList = gameList;
+        _configuration = configuration;
     }
     
     [HttpPost("connect")]
@@ -35,7 +39,7 @@ public class GameLobbyController : Controller
         {
             Id = Guid.NewGuid(),
             ConnectionId = pairInfo.FirstId,
-            Player = new Player()
+            Player = new Player(_configuration)
         };
         await _hubContext.ToGameGroup(firstInfo.ConnectionId, lobbyGuid.ToString());
         
@@ -43,7 +47,7 @@ public class GameLobbyController : Controller
         {
             Id = Guid.NewGuid(),
             ConnectionId = pairInfo.SecondId,
-            Player = new Player()
+            Player = new Player(_configuration)
         };
         await _hubContext.ToGameGroup(secondInfo.ConnectionId, lobbyGuid.ToString());
 

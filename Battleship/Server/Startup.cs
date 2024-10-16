@@ -1,4 +1,3 @@
-using Server.Web;
 using Server.Web.Hub;
 using Server.Web.Lobby;
 using Server.Web.Lobby.Game;
@@ -7,12 +6,23 @@ namespace Server;
 
 internal class Startup
 {
+    public IConfiguration Configuration { get; set; }
+    
+    public Startup(IConfiguration configuration)
+    {
+        var builder = new ConfigurationBuilder()
+            .AddJsonFile("Config/conf.json", optional: false, reloadOnChange: true);
+        Configuration = builder.Build();
+    }
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
 
         services.AddSingleton<IWaiterList, WaitersMemoryList>();
         services.AddSingleton<IGameList, GamesMemoryList>();
+        
+        services.AddSingleton<IConfiguration>(Configuration);
         
         services.AddSignalR();
         services.AddCors(options =>

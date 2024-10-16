@@ -1,15 +1,28 @@
-using System.Numerics;
 using Server.GameLogic.Field.Utils;
+using Server.GameLogic.Ship;
 
 namespace Server.GameLogic.Field;
 
-public class ShipPlacer(Field field)
+public class ShipPlacer
 {
+    private ShipTypeCounter _typeCounter;
+    
+    private readonly Field _field;
+
+    public ShipPlacer(Field field, IConfiguration configuration)
+    {
+        _field = field;
+        _typeCounter = new ShipTypeCounter(configuration
+            .GetSection("ShipConfig")
+            .Get<ShipConfig>());
+    }
+
     public enum PlaceResult
     {
         Success,
         OutOfBounds,
         IntersectOther,
+        TypeMaxCount
     }
     
     private struct ShipPosition
@@ -43,14 +56,21 @@ public class ShipPlacer(Field field)
     
     public void PlaceShip(Ship.ShipType type, int index, bool isVertical)
     {
-        var shipPosition = new ShipPosition(type, index, isVertical, field.SizeX);
+        var shipPosition = new ShipPosition(type, index, isVertical, _field.SizeX);
         
-        field.Occupy(shipPosition.OccupyIndexes);
+        _field.Occupy(shipPosition.OccupyIndexes);
+        
+        _typeCounter.Add(type);
     }
     
     public PlaceResult CanPlaceShip(Ship.ShipType type, int index, bool isVertical)
     {
-        var positionToCheck = new ShipPosition(type, index, isVertical, field.SizeX);
+        var positionToCheck = new ShipPosition(type, index, isVertical, _field.SizeX);
+
+        if (!_typeCounter.CanAdd(type))
+        {
+            return PlaceResult.TypeMaxCount;
+        }
         
         if (!InField(positionToCheck))
         {
@@ -71,8 +91,8 @@ public class ShipPlacer(Field field)
     {
         var checkIndexes = GetNeighbors(positionToCheck);
         
-        var lowerBound = field.Cells.GetLowerBound(0);
-        var upperBound = field.Cells.GetUpperBound(0);
+        var lowerBound = _field.Cells.GetLowerBound(0);
+        var upperBound = _field.Cells.GetUpperBound(0);
         
         foreach (var index in checkIndexes)
         {
@@ -81,7 +101,7 @@ public class ShipPlacer(Field field)
                 continue;
             }
 
-            if (field.Cells[index] >= Cell.Occupied)
+            if (_field.Cells[index] >= Cell.Occupied)
             {
                 return true;
             }
@@ -92,14 +112,14 @@ public class ShipPlacer(Field field)
 
     private bool InField(ShipPosition positionToCheck)
     {
-        var lowerBound = field.Cells.GetLowerBound(0);
-        var upperBound = field.Cells.GetUpperBound(0);
+        var lowerBound = _field.Cells.GetLowerBound(0);
+        var upperBound = _field.Cells.GetUpperBound(0);
         
         if (positionToCheck.StartIndex < lowerBound || 
             positionToCheck.StartIndex > upperBound || 
             (positionToCheck.Vertical ? 
                 positionToCheck.EndIndex > upperBound : 
-                positionToCheck.EndIndex % field.SizeY < positionToCheck.StartIndex % field.SizeX))
+                positionToCheck.EndIndex % _field.SizeY < positionToCheck.StartIndex % _field.SizeX))
         {
             // Начало или конец карабля находится за пределами поля
             return false;
@@ -114,7 +134,7 @@ public class ShipPlacer(Field field)
         
         foreach (var index in positionToCheck.OccupyIndexes)
         {
-            result.AddRange(field.GetNeighbors(index));    
+            result.AddRange(_field.GetNeighbors(index));    
         }
         
         return result.
